@@ -8,6 +8,17 @@ salto de línea en HTML es la etiqueta <br/>). Repetir la impresión de los núm
 las estructuras while y foreach.
 */
 
+$impares = array();
 
+for($i = 0; $i < 10*2; $i++){
+    if(($i+1) % 2 == 0){
+        array_push($impares,$i);
+    }
+}
+
+foreach($impares as $impar){
+    echo $impar;
+    echo '<br/>';
+}
 
 ?>

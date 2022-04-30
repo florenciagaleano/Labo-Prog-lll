@@ -1,0 +1,26 @@
+[
+    {
+        "nombre": "Flor",
+        "clave": "florchus123",
+        "mail": "flor@gmail.com",
+        "id": 1,
+        "fechaRegistro": "04-30-2022 05:35:27 pm",
+        "foto": "PALOMA.jpg"
+    },
+    {
+        "nombre": "Matias",
+        "clave": "mati1234",
+        "mail": "mati@gmail.com",
+        "id": 1,
+        "fechaRegistro": "04-30-2022 05:35:53 pm",
+        "foto": "PANDA.jpg"
+    },
+    {
+        "nombre": "Ivana",
+        "clave": "ivi1972",
+        "mail": "ivana@gmail.com",
+        "id": 1,
+        "fechaRegistro": "04-30-2022 05:36:32 pm",
+        "foto": "SERPIENTE.jpg"
+    }
+]

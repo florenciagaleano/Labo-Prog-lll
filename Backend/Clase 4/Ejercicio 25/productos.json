@@ -1,0 +1,26 @@
+[
+    {
+        "id": 2726,
+        "codigoDeBarras": "123456",
+        "nombre": "shampoo",
+        "tipo": "perfumeria",
+        "stock": "1",
+        "precio": "180"
+    },
+    {
+        "id": 7888,
+        "codigoDeBarras": "111111",
+        "nombre": "fideos",
+        "tipo": "alimentos",
+        "stock": "1",
+        "precio": "200"
+    },
+    {
+        "id": 270,
+        "codigoDeBarras": "333333",
+        "nombre": "arroz",
+        "tipo": "alimentos",
+        "stock": "1",
+        "precio": "200"
+    }
+]

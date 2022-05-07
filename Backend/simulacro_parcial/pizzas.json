@@ -1,0 +1,37 @@
+[
+    {
+        "id": 5,
+        "sabor": "muzza",
+        "precio": "160",
+        "tipo": "molde",
+        "cantidad": "3"
+    },
+    {
+        "id": 5,
+        "sabor": "anana",
+        "precio": "180",
+        "tipo": "molde",
+        "cantidad": "1"
+    },
+    {
+        "id": 5,
+        "sabor": "anana",
+        "precio": "200",
+        "tipo": "piedra",
+        "cantidad": "1"
+    },
+    {
+        "id": 5,
+        "sabor": "fugazzeta",
+        "precio": "300",
+        "tipo": "piedra",
+        "cantidad": 6
+    },
+    {
+        "id": 5,
+        "sabor": "fugazzeta",
+        "precio": "500",
+        "tipo": "molde",
+        "cantidad": 10
+    }
+]

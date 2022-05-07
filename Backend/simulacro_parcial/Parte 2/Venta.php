@@ -9,13 +9,13 @@
         public $cantidad;
         public $foto;
 
-        public function __construct($mail,$sabor,$tipo,$cantidad,$nombreFoto = null)
+        public function __construct($mail,$sabor,$tipo,$cantidad,$foto = null)
         {
             $this->mail =$mail;
             $this->sabor =$sabor;
             $this->tipo =$tipo;
             $this->cantidad =$cantidad;
-            $this->foto = $nombreFoto;
+            $this->foto = $foto;
         }
 
         public function GuardarVenta(){
@@ -28,19 +28,32 @@
             $query->bindValue(':cantidad_pizza', $this->cantidad, PDO::PARAM_INT);
             $query->bindValue(':pedido', rand(1,1000), PDO::PARAM_INT);
             $query->bindValue(':fecha',(new DateTime('now'))->format('Y-m-d'), PDO::PARAM_STR);
-            //echo "prueba db 1";
 
             $query->execute();
+            //esto rompe
+            //return $objetoAccesoDato->ReturnLastIDInserted();
+        }
 
-            //echo "prueba db 2";
+        private function CrearDestino(){
+            mkdir("ImagenesDeLaVenta");
+            $mail = explode('@',$this->mail);
+            $destino = "ImagenesDeLaVenta/" . $this->tipo . $this->sabor . $mail[0] . date('Y-m-d') . ".jpg";
+            return $destino;
+        }
 
-            return $objetoAccesoDato->ReturnLastIDInserted();
+        public function GuardarFoto(){
+            if (move_uploaded_file($this->foto, $this->CrearDestino())) {
+                return true;
+            }
+            return false;
+            
         }
 
         public function Vender(){
             if(Pizza::existeYHayStock($this->sabor,$this->tipo,$this->cantidad)){
                 Pizza::actualizarStock($this->sabor,$this->tipo,$this->cantidad);
                 $this->GuardarVenta();
+                $this->GuardarFoto();
                 return true;
             }
 

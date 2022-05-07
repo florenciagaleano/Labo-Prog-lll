@@ -4,20 +4,20 @@
         "sabor": "fugazzeta",
         "precio": "250",
         "tipo": "piedra",
-        "cantidad": "1"
+        "cantidad": 500
     },
     {
         "id": 3,
         "sabor": "muzza",
         "precio": "200",
         "tipo": "piedra",
-        "cantidad": "1"
+        "cantidad": 500
     },
     {
         "id": 3,
         "sabor": "muzza",
         "precio": "180",
         "tipo": "molde",
-        "cantidad": 35
+        "cantidad": 498
     }
 ]

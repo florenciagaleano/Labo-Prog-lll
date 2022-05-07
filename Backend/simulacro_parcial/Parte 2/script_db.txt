@@ -1,0 +1,14 @@
+create database simulacro_parcial;
+use simulacro_parcial;
+create table venta(
+	id INT NOT NULL AUTO_INCREMENT,  
+	mail VARCHAR(100) NOT NULL ,  
+	sabor_pizza VARCHAR(100) NOT NULL ,
+    tipo_pizza VARCHAR(100) NOT NULL ,
+	cantidad_pizza INT ,
+    pedido INT,
+	fecha DATE,
+    PRIMARY KEY  (id)
+);
+
+ALTER TABLE venta AUTO_INCREMENT=101;

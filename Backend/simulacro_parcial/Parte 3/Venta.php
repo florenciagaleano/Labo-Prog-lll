@@ -70,7 +70,7 @@
             echo 'Pizzas Vendidas: '.$query->fetch(PDO::FETCH_ASSOC)['Pizzas_Vendidas'].' unidades';
         }
 
-        public static function printVentasPorFecha($desde,$hasta){//NO FUNCIONA
+        public static function printVentasPorFecha($desde,$hasta){//CONSULTA OK
             $stringQuery = 'SELECT * FROM VENTA WHERE fecha > :desde AND fecha < :hasta';
             $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
             $query = $objetoAccesoDato->RetornarConsulta($stringQuery);
@@ -78,15 +78,50 @@
             $query->bindValue(':hasta', $hasta, PDO::PARAM_STR);
             $query->execute();
 
-            var_dump($query->fetch(PDO::FETCH_CLASS));
+            while ($fila = $query->fetch(PDO::FETCH_ASSOC)) {
+                $pizzas []= $fila;
+            }
+
+            var_dump($pizzas);
 
         }
 
-        public static function printVentasPorSabor($sabor){//NO FUNCIONA
+        public static function printVentasPorSabor($sabor){//CONSULTA OK
+            var_dump($sabor);
+
+            $stringQuery = 'SELECT * FROM venta WHERE sabor_pizza = :sabor ORDER BY fecha;';
             $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-			$consulta =$objetoAccesoDato->RetornarConsulta("select sabor_pizza from venta");
-			$consulta->execute();			
-			$pizzas = $consulta->fetchAll(PDO::FETCH_CLASS, "Venta");
+            $query = $objetoAccesoDato->RetornarConsulta($stringQuery);
+            $query->bindValue(':sabor', $sabor, PDO::PARAM_STR);
+            //var_dump($sabor);
+
+            $query->execute();
+            //var_dump($sabor);
+
+            while ($fila = $query->fetch(PDO::FETCH_ASSOC)) {
+                $pizzas []= $fila;
+            }
+
+            var_dump($pizzas);
+        }
+
+        public static function printVentasPorUsuario($mail){//CONSULTA OK
+
+            var_dump($mail);
+
+            $stringQuery = 'SELECT * FROM venta WHERE mail = :mail;';
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+            $query = $objetoAccesoDato->RetornarConsulta($stringQuery);
+            $query->bindValue(':mail', $mail, PDO::PARAM_STR);
+            //var_dump($sabor);
+
+            $query->execute();
+            //var_dump($sabor);
+
+            while ($fila = $query->fetch(PDO::FETCH_ASSOC)) {
+                $pizzas []= $fila;
+            }
+
             var_dump($pizzas);
         }
 

@@ -8,7 +8,7 @@
     }
 
     if(isset($_POST['usuarioMail'])){
-        
+        Venta::printVentasPorUsuario($_POST['usuarioMail']);
     }
 
     if(isset($_POST['sabor'])){

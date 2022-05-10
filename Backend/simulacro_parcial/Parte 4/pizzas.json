@@ -1,0 +1,42 @@
+[
+    {
+        "id": 3,
+        "sabor": "fugazzeta",
+        "precio": "250",
+        "tipo": "piedra",
+        "cantidad": 500,
+        "foto": null
+    },
+    {
+        "id": 3,
+        "sabor": "muzza",
+        "precio": "200",
+        "tipo": "piedra",
+        "cantidad": 500,
+        "foto": null
+    },
+    {
+        "id": 3,
+        "sabor": "muzza",
+        "precio": "150",
+        "tipo": "molde",
+        "cantidad": 497,
+        "foto": null
+    },
+    {
+        "id": 3,
+        "sabor": "saborFalopa",
+        "precio": "150",
+        "tipo": "molde",
+        "cantidad": "1",
+        "foto": "C:\\Users\\Flia. Galeano\\AppData\\Local\\Temp\\phpC2D1.tmp"
+    },
+    {
+        "id": 4,
+        "sabor": "saborFalopa",
+        "precio": "150",
+        "tipo": "piedra",
+        "cantidad": "1",
+        "foto": "C:\\Users\\Flia. Galeano\\AppData\\Local\\Temp\\php3CFF.tmp"
+    }
+]

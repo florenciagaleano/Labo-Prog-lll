@@ -99,6 +99,15 @@ class Criptomoneda
         return $consulta->rowCount();
     }
 
+    public static function EliminarCripto($id)
+    {
+        $objAccesoDatos = AccesoDatos::obtenerInstancia();
+        $consulta =$objAccesoDatos->prepararConsulta("DELETE FROM criptomoneda WHERE id=:id");
+        $consulta->bindValue(':id',(int)$id, PDO::PARAM_INT);
+        $consulta->execute(); 
+        //echo $consulta->rowCount();
+        return $consulta->rowCount();
+    }
 }
 
 ?>

@@ -56,6 +56,7 @@ $app->group('/criptos', function (RouteCollectorProxy $group) {
   $group->get('/getcriptobynacionalidad/{nacionalidad}', \CriptomonedaController::class . ':TraerPorNacionalidad');
   $group->post('/crear', \CriptomonedaController::class . ':CargarUno');
   $group->put('/modificar/{id}', \CriptomonedaController::class . ':ModificarUno')->add(\MWPermisos::class . ':VerificarAdministrador');
+  $group->delete('/eliminar/{id}', \CriptomonedaController::class . ':BorrarUno')->add(\MWPermisos::class . ':VerificarAdministrador');
 
 });
 

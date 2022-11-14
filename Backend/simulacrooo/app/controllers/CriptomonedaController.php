@@ -130,16 +130,12 @@ class CriptomonedaController extends Criptomoneda
     public function BorrarUno($request, $response, $args)
     {
       $crypto_id = intval($args['id']);
+      var_dump($args['id']);
       $cripto = Criptomoneda::obtenerCriptoPorId($crypto_id);
-      if (isset($cripto) && Criptomoneda::deleteEntity($cripto) > 0) {
-          echo "<h2>cripto with ID ".$crypto_id." deleted successfully</h2><br>";
-          $cripto->printSingleEntityAsTable();
-
-          $payload = json_encode(array("message" => "Entity deleted"));
-          $response->getBody()->write("Entity deleted successfully");
+      if (Criptomoneda::EliminarCripto($crypto_id) > 0) {
+        $payload = json_encode(array("mensaje" => "Cripto eliminada con exito"));
       } else {
-          $payload = json_encode(array("message" => "Error Deleting"));
-          $response->getBody()->write("Something failed while deleting the Entity");
+        $payload = json_encode(array("mensaje" => "No se puede liminar la cripto"));
       }
 
       $response->getBody()->write($payload);

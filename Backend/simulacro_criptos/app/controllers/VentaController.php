@@ -1,30 +1,34 @@
 <?php
-require_once './models/Pedido.php';
+require_once './models/Venta.php';
 require_once './interfaces/IApiUsable.php';
 
-class PedidoController extends Pedido implements IApiUsable
+class VentaController extends Venta implements IApiUsable
 {
     public function CargarUno($request, $response, $args)
     {
         $parametros = $request->getParsedBody();
 
-        $Pedido = $parametros['usuario_id'];
-        $clave = $parametros['producto_id'];
-        $estado = "PENDIENTE";
-        $clave = $parametros['mesa_id'];
-        $codigo = $parametros['codigo'];
-        $tiempo_estimado = $parametros['tiempo_estimado'];
+        $cripto_id = $parametros['cripto_id'];
+        $cantidad = $parametros['cantidad'];
+        $nombre_cliente = $parametros['nombre_cliente'];
+        $fecha = (new DateTime('now'))->format('Y-m-d');
 
-        $rol = $parametros['rol'];
-        $sector = $parametros['sector'];
+        if($cripto_id != null && $cantidad != null && $nombre_cliente != null && isset($_FILES['imagen'])){
 
-        // Creamos el Pedido
-        $usr = new Pedido();
-        $usr->Pedido = $Pedido;
-        $usr->clave = $clave;
-        $usr->crearPedido();
+        $venta = new Venta();
+        $venta->id_cripto = $cripto_id;
+        $venta->cantidad = $cantidad;
+        $venta->cliente = $nombre_cliente;
+        $venta->fecha = $fecha;
+        $venta->crearVenta();
+        $venta->GuardarFoto($_FILES["imagen"]["tmp_name"]);
 
-        $payload = json_encode(array("mensaje" => "Pedido creado con exito"));
+
+        $payload = json_encode(array("mensaje" => "Venta creada con exito"));
+      }else{
+        $payload = json_encode(array("mensaje" => "Faltan campos. No se pudo crear la venta."));
+
+      }
 
         $response->getBody()->write($payload);
         return $response

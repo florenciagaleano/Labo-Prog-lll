@@ -18,6 +18,7 @@ require_once './middlewares/MWPermisos.php';
 
 require_once './controllers/UsuarioController.php';
 require_once './controllers/CriptomonedaController.php';
+require_once './controllers/VentaController.php';
 
 // Load ENV
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -52,11 +53,11 @@ $app->group('/criptomonedas', function (RouteCollectorProxy $group) {
   $group->post('/crear', \CriptomonedaController::class . ':CargarUno');
 });
 
-//Mesas
-/*$app->group('/ventas', function (RouteCollectorProxy $group) {
-  $group->get('[/]', \MesaController::class . ':TraerTodos');
-  $group->post('/login', \MesaController::class . ':Login');
-});*/
+//Ventas
+$app->group('/ventas', function (RouteCollectorProxy $group) {
+  $group->get('[/]', \VentaController::class . ':TraerTodos');
+  $group->post('/crear', \VentaController::class . ':CargarUno');
+});
 
 //esta parte me falta
 

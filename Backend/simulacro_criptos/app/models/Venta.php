@@ -1,19 +1,25 @@
 <?php
 
+require_once "Criptomoneda.php";
+
 class Venta
 {
     public $id;
     public $cliente;
     public $id_cripto;
+    public $cantidad;
+    public $fecha;
 
 
     public function crearVenta()
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("INSERT INTO venta (fecha, id_cripto, cliente) VALUES (:fecha, :id_cripto, :cliente)");
+        $consulta = $objAccesoDatos->prepararConsulta("INSERT INTO venta (fecha, id_cripto, cliente, cantidad) VALUES (:fecha, :id_cripto, :cliente, :cantidad)");
         $consulta->bindValue(':id_cripto', $this->id_cripto, PDO::PARAM_INT);
-        $consulta->bindValue(':fecha',(new DateTime('now'))->format('Y-m-d'), PDO::PARAM_STR);
+        var_dump($this->fecha);
+        $consulta->bindValue(':fecha',$this->fecha, PDO::PARAM_STR);
         $consulta->bindValue(':cliente', $this->id_cripto, PDO::PARAM_STR);
+        $consulta->bindValue(':cantidad', $this->cantidad, PDO::PARAM_INT);
 
         $consulta->execute();
 
@@ -23,46 +29,28 @@ class Venta
     public static function obtenerTodos()
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT fecha, id_cripto FROM venta");
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT fecha, id_cripto, cantidad FROM venta");
         $consulta->execute();
 
         return $consulta->fetchAll(PDO::FETCH_CLASS, 'Venta');
     }
 
-    public static function obtenerCriptosPorNacionalidad($nacionalidad){//CONSULTA OK
-        //var_dump($nacionalidad);
-
-        $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT * FROM criptomoneda WHERE nacionalidad = :nacionalidad");
-        $consulta->bindValue(':nacionalidad', $nacionalidad, PDO::PARAM_STR);
-        //var_dump($nacionalidad);
-
-        $consulta->execute();
-        //var_dump($nacionalidad);
-
-        while ($fila = $consulta->fetch(PDO::FETCH_ASSOC)) {
-            $criptos []= $fila;
-        }
-
-        return $criptos;
+    private function CrearDestino(){
+        //var_dump($this->id_cripto);
+        $cripto = Criptomoneda::obtenerCriptoPorId($this->id_cripto);
+        mkdir("FotosCripto");
+        $destino = "FotosCripto/" . $cripto->nombre . $this->cliente . $this->fecha . ".jpg";
+        return $destino;
     }
 
-    public static function obtenerCriptoPorId($id){//CONSULTA OK
-        //var_dump($nacionalidad);
-
-        $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT * FROM criptomoneda WHERE id = :id");
-        $consulta->bindValue(':id', $id, PDO::PARAM_STR);
-        //var_dump($nacionalidad);
-
-        $consulta->execute();
-        //var_dump($nacionalidad);
-
-        while ($fila = $consulta->fetch(PDO::FETCH_ASSOC)) {
-            $criptos []= $fila;
+    public function GuardarFoto($foto){
+        $mover =  move_uploaded_file($foto, $this->CrearDestino());
+        //var_dump($mover);
+        if ($mover) {
+            return true;
         }
-
-        return $criptos;
+        return false;
+        
     }
 
 }

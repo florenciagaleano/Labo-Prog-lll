@@ -49,21 +49,12 @@ class Criptomoneda
     }
 
     public static function obtenerCriptoPorId($id){//CONSULTA OK
-        //var_dump($nacionalidad);
-
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT * FROM criptomoneda WHERE id = :id");
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT nombre,precio, nacionalidad FROM criptomoneda WHERE id = :id");
         $consulta->bindValue(':id', $id, PDO::PARAM_STR);
-        //var_dump($nacionalidad);
-
         $consulta->execute();
-        //var_dump($nacionalidad);
 
-        while ($fila = $consulta->fetch(PDO::FETCH_ASSOC)) {
-            $criptos []= $fila;
-        }
-
-        return $criptos;
+        return $consulta->fetchObject('Criptomoneda');
     }
 
     private function CrearDestino(){

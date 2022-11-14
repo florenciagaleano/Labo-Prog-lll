@@ -10,9 +10,11 @@ class MWPermisos
 {
     public static function VerificarAdministrador(Request $request, RequestHandler $handler) {
         $jwtHeader = $request->getHeaderLine('Authorization');
+        $token = trim(explode("Bearer", $jwtHeader)[1]);
+
         $response = new Response();
         try {
-            $user = AutentificadorJWT::ObtenerData($jwtHeader);
+            $user = AutentificadorJWT::ObtenerData($token);
 
             if (strtoupper($user->tipo) == 'ADMIN') {                
                 $response = $handler->handle($request);

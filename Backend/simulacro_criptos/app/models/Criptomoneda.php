@@ -24,7 +24,7 @@ class Criptomoneda
     public static function obtenerTodos()
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT nombre,precio, nacionalidad FROM criptomoneda");
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT id, nombre, precio, nacionalidad FROM criptomoneda");
         $consulta->execute();
 
         return $consulta->fetchAll(PDO::FETCH_CLASS, 'Criptomoneda');
@@ -50,7 +50,7 @@ class Criptomoneda
 
     public static function obtenerCriptoPorId($id){//CONSULTA OK
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT nombre,precio, nacionalidad FROM criptomoneda WHERE id = :id");
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT id, nombre, precio, nacionalidad FROM criptomoneda WHERE id = :id");
         $consulta->bindValue(':id', $id, PDO::PARAM_STR);
         $consulta->execute();
 
@@ -73,6 +73,18 @@ class Criptomoneda
         
     }
 
+    public static function ModificarCripto($nombre,$precio,$nacionalidad,$id)
+    {
+        $objAccesoDatos = AccesoDatos::obtenerInstancia();
+        $consulta =$objAccesoDatos->RetornarConsulta("UPDATE criptomoneda SET nombre=:nombre,precio=:precio,nacionalidad=:nacionalidad WHERE id=:id");
+        $consulta->bindValue(':nombre',$nombre, PDO::PARAM_STR);
+        $consulta->bindValue(':precio',$precio, PDO::PARAM_STR);
+        $consulta->bindValue(':nacionalidad',$nacionalidad, PDO::PARAM_INT);
+        $consulta->bindValue(':id',(int)$id, PDO::PARAM_INT);
+        $consulta->execute(); 
+        //echo $consulta->rowCount();
+        return $consulta->rowCount();
+    }
 
 }
 

@@ -2,7 +2,7 @@
 require_once './models/Criptomoneda.php';
 require_once './interfaces/IApiUsable.php';
 
-class CriptomonedaController extends Criptomoneda implements IApiUsable
+class CriptomonedaController extends Criptomoneda
 {
     public function CargarUno($request, $response, $args)
     {
@@ -54,25 +54,42 @@ class CriptomonedaController extends Criptomoneda implements IApiUsable
           ->withHeader('Content-Type', 'application/json');
     }
 
-
-    ///////////////////////////////////////////////////////
-    public function TraerUno($request, $response, $args)
-    {
-        return null;
-    }
     
     public function ModificarUno($request, $response, $args)
     {
-        $parametros = $request->getParsedBody();
 
-        $nombre = $parametros['nombre'];
-        Criptomoneda::modificarCriptomoneda($nombre);
+      $params = $request->getParsedBody();
+      
+      $id = $args['id'];
+      var_dump($id);
 
-        $payload = json_encode(array("mensaje" => "Producto modificado con exito"));
 
-        $response->getBody()->write($payload);
-        return $response
-          ->withHeader('Content-Type', 'application/json');
+      if (isset($id)) {
+          $crypto_id = $id;
+          var_dump($crypto_id);
+          $cripto = Criptomoneda::obtenerCriptoPorId($crypto_id);
+          
+          // Gets the new data
+          $nombre = $params['nombre'];
+          $nacionalidad = $params['nacionalidad'];
+          $precio = $params['precio'];
+          
+          $nombre != null ? $cripto->nombre = $nombre : $cripto->nombre = $cripto->nombre;
+          $nacionalidad != null ? $cripto->nacionalidad = $nacionalidad : $cripto->nacionalidad = $cripto->nacionalidad;
+          $precio != null ? $cripto->precio = $precio : $cripto->precio = $cripto->precio;
+
+          if (Criptomoneda::ModificarCripto($nombre,$precio,$nacionalidad,$id) > 0) {
+
+            $payload = json_encode(array("mensaje" => "Cripto modificada con exito"));
+          }else{
+            $payload = json_encode(array("mensaje" => "No se pudo realizar la modificacion."));
+          }
+      }else{
+          $payload = json_encode(array("error" => "Ingrese id de criptomoneda"));
+      }
+      
+      $response->getBody()->write($payload);
+      return $response->withHeader('Content-Type', 'application/json');
     }
 
     public function BorrarUno($request, $response, $args)

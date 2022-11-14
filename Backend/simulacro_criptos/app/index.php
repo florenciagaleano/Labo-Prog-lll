@@ -47,10 +47,14 @@ $app->group('/usuarios', function (RouteCollectorProxy $group) {
   $group->post('/login', \UsuarioController::class . ':Login');
 });
 
-//Productos
-$app->group('/criptomonedas', function (RouteCollectorProxy $group) {
+//Criptomonedas
+$app->group('/criptos', function (RouteCollectorProxy $group) {
+
   $group->get('[/]', \CriptomonedaController::class . ':TraerTodos');
   $group->post('/crear', \CriptomonedaController::class . ':CargarUno');
+  $group->put('/modificar/{id}', \CriptomonedaController::class . ':CargarUno');
+  $group->delete('/crear', \CriptomonedaController::class . ':CargarUno');
+
 });
 
 //Ventas
@@ -59,7 +63,6 @@ $app->group('/ventas', function (RouteCollectorProxy $group) {
   $group->post('/crear', \VentaController::class . ':CargarUno');
 });
 
-//esta parte me falta
 
 $app->group('/jwt', function (RouteCollectorProxy $group) {
 

@@ -18,7 +18,7 @@ class Venta
         $consulta->bindValue(':id_cripto', $this->id_cripto, PDO::PARAM_INT);
         var_dump($this->fecha);
         $consulta->bindValue(':fecha',$this->fecha, PDO::PARAM_STR);
-        $consulta->bindValue(':cliente', $this->id_cripto, PDO::PARAM_STR);
+        $consulta->bindValue(':cliente', $this->cliente, PDO::PARAM_STR);
         $consulta->bindValue(':cantidad', $this->cantidad, PDO::PARAM_INT);
 
         $consulta->execute();
@@ -29,10 +29,29 @@ class Venta
     public static function obtenerTodos()
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT fecha, id_cripto, cantidad FROM venta");
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT id, fecha, id_cripto, cantidad, cliente FROM venta");
         $consulta->execute();
 
         return $consulta->fetchAll(PDO::FETCH_CLASS, 'Venta');
+    }
+
+    public static function obtenerAlemanasJunio()
+    {
+        $objAccesoDatos = AccesoDatos::obtenerInstancia();
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT id, fecha, id_cripto, cantidad, cliente FROM venta ");
+        $consulta->execute();
+
+        $ventas = $consulta->fetchAll(PDO::FETCH_CLASS, 'Venta');
+        $ventasFiltradas = array();
+        //var_dump($ventas);
+
+        foreach($ventas as $venta){
+            if((Criptomoneda::obtenerCriptoPorId($venta->id_cripto))->nacionalidad == "alemana"){
+                array_push($ventasFiltradas,$venta);
+            }
+        }
+
+        return $ventasFiltradas;
     }
 
     private function CrearDestino(){

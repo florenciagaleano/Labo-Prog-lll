@@ -3,27 +3,16 @@
 class Usuario
 {
     public $id;
-    public $mail;
+    public $usuario;
     public $clave;
-    public $tipo;
-
-    public function setTipo($tipo){
-        if($tipo != "ADMIN" && $tipo != "CLIENTE"){
-                $this->tipo = "CLIENTE";
-            }
-
-        $this->tipo = $tipo;
-    }
 
     public function crearUsuario()
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("INSERT INTO usuario (mail, clave, tipo) VALUES (:mail, :clave, :tipo)");
+        $consulta = $objAccesoDatos->prepararConsulta("INSERT INTO usuarios (usuario, clave) VALUES (:usuario, :clave)");
         $claveHash = password_hash($this->clave, PASSWORD_DEFAULT);
-        $consulta->bindValue(':mail', $this->mail, PDO::PARAM_STR);
-        $consulta->bindValue(':clave', $this->clave, PDO::PARAM_STR);
-        $consulta->bindValue(':tipo', $this->tipo, PDO::PARAM_STR);
-
+        $consulta->bindValue(':usuario', $this->usuario, PDO::PARAM_STR);
+        $consulta->bindValue(':clave', $claveHash);
         $consulta->execute();
 
         return $objAccesoDatos->obtenerUltimoId();
@@ -32,17 +21,17 @@ class Usuario
     public static function obtenerTodos()
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT id, mail, clave, tipo FROM usuario");
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT id, usuario, clave FROM usuarios");
         $consulta->execute();
 
         return $consulta->fetchAll(PDO::FETCH_CLASS, 'Usuario');
     }
 
-    public static function obtenerUsuarioPorMail($mail)
+    public static function obtenerUsuario($usuario)
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT id, mail, clave, tipo FROM usuario WHERE mail = :mail");
-        $consulta->bindValue(':mail', $mail, PDO::PARAM_STR);
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT id, usuario, clave FROM usuarios WHERE usuario = :usuario");
+        $consulta->bindValue(':usuario', $usuario, PDO::PARAM_STR);
         $consulta->execute();
 
         return $consulta->fetchObject('Usuario');

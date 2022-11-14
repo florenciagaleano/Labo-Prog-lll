@@ -30,6 +30,27 @@ class MWPermisos
         return $response->withHeader('Content-Type', 'application/json');;
     }
 
+    public static function VerificarUsuarioRegistrado(Request $request, RequestHandler $handler) {
+        $jwtHeader = $request->getHeaderLine('Authorization');
+        $token = trim(explode("Bearer", $jwtHeader)[1]);
+
+        $response = new Response();
+        try {
+            $user = AutentificadorJWT::ObtenerData($token);
+
+            if (strtoupper($user->tipo) == 'ADMIN' || strtoupper($user->tipo) == 'CLIENTE') {                
+                $response = $handler->handle($request);
+                $response = $response->withStatus( 200 );
+            } else {                
+                throw new Exception("El usuario no esta registrado.");
+            }
+        } catch (Exception $e) {         
+            $payload = json_encode(array('Error: ' => $e->getMessage()));
+            $response->getBody()->write($payload);
+            $response = $response->withStatus( 401 );
+        }
+        return $response->withHeader('Content-Type', 'application/json');;
+    }
 
 
 }

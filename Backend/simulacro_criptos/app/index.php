@@ -51,9 +51,10 @@ $app->group('/usuarios', function (RouteCollectorProxy $group) {
 $app->group('/criptos', function (RouteCollectorProxy $group) {
 
   $group->get('[/]', \CriptomonedaController::class . ':TraerTodos');
+  $group->get('/getcriptobyid/{id}', \CriptomonedaController::class . ':TraerPorId');
+  $group->get('/getcriptobynacionalidad/{nacionalidad}', \CriptomonedaController::class . ':TraerPorNacionalidad');
   $group->post('/crear', \CriptomonedaController::class . ':CargarUno');
   $group->put('/modificar/{id}', \CriptomonedaController::class . ':CargarUno');
-  $group->delete('/crear', \CriptomonedaController::class . ':CargarUno');
 
 });
 

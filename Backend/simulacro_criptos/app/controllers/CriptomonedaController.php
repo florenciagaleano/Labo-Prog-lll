@@ -38,15 +38,40 @@ class CriptomonedaController extends Criptomoneda
     public function TraerTodos($request, $response, $args)
     {
       $parametros = $request->getParsedBody();
-      //var_dump($parametros['nacionalidad']);
-      if($parametros['nacionalidad'] != null){
-        $lista = Criptomoneda::obtenerCriptosPorNacionalidad($parametros['nacionalidad']);
-      }else if($parametros['id'] != null){
-        $lista = Criptomoneda::obtenerCriptoPorId($parametros['id']);
-      }
-      else{
+      //var_dump(isset($_GET['id']));
+
         $lista = Criptomoneda::obtenerTodos();
-      }
+      
+        $payload = json_encode(array("listaCriptomoneda" => $lista));
+
+        $response->getBody()->write($payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
+    }
+
+    public function TraerPorNacionalidad($request, $response, $args)
+    {
+      
+      $crypto_id = $args['nacionalidad'];
+      $parametros = $request->getParsedBody();
+      //var_dump(isset($_GET['id']));
+        $lista = Criptomoneda::obtenerCriptosPorNacionalidad($crypto_id);
+
+        $payload = json_encode(array("listaCriptomoneda" => $lista));
+
+        $response->getBody()->write($payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
+    }
+
+    public function TraerPorId($request, $response, $args)
+    {
+      
+      $crypto_id = $args['id'];
+      $parametros = $request->getParsedBody();
+      //var_dump(isset($_GET['id']));
+        $lista = Criptomoneda::obtenerCriptoPorId($crypto_id);
+
         $payload = json_encode(array("listaCriptomoneda" => $lista));
 
         $response->getBody()->write($payload);

@@ -2,10 +2,8 @@ const local = "http://localhost:80/";
 let arrayHeaders = new Array("ID", "NOMBRE", "APELLIDO", "EDAD", "VENTAS", "SUELDO", "COMPRAS", "TELEFONO", "MODIFICAR", "ELIMINAR");
 let tabla = document.getElementById("tabla-personas");
 
-window.addEventListener("load", async () => {
-    const data = await GetPersonasJSON();
-    const arrayPersonas = GetPersonas(data);
-    tabla.appendChild(crearTabla(arrayPersonas));
+window.addEventListener("load", () => {
+    GetPersonasJSON(); // Llama a la función para obtener datos
 });
 
 function limpiarTabla(tabla) {
@@ -58,7 +56,7 @@ function CrearFila(columnasData, tBody) {
     tBody.appendChild(fila);
 }
 
-function agregarBotones(fila){
+function agregarBotones(fila) {
     const elementoModificar = document.createElement("td");
     const elementoEliminar = document.createElement("td");
 
@@ -74,23 +72,19 @@ function agregarBotones(fila){
     fila.appendChild(elementoEliminar);
 }
 
-async function GetPersonasJSON() {
+function GetPersonasJSON() {
+    var xhttp = new XMLHttpRequest();
     let endpoint = "labo3/PersonasEmpleadosClientes.php";
-    console.log(`${local}${endpoint}`);
-    try {
-        const response = await fetch(`${local}${endpoint}`, { method: 'GET' });
-        if (response.status === 200) {
-            console.log(response);
-            const data = await response.json();
-            return data;
-        } else {
-            console.log('No se pudo hacer la petición');
-            return null;
+    xhttp.onreadystatechange = function() {
+        if (xhttp.readyState == 4 && xhttp.status == 200) {
+            console.log(JSON.parse(xhttp.response)); // Asegúrate de que los datos se impriman correctamente
+            const data = JSON.parse(xhttp.response);
+            let arrayPersonas = GetPersonas(data);
+            tabla.appendChild(crearTabla(arrayPersonas));
         }
-    } catch (error) {
-        console.log('Hubo un problema con la petición: ' + error.message);
-        return null;
-    }
+    };
+    xhttp.open("GET", `${local}${endpoint}`, true);
+    xhttp.send();
 }
 
 function GetPersonas(data) {
@@ -126,13 +120,13 @@ function filtrarData(data, persona) {
 
     // Itera sobre los campos y agrega los que estén marcados en el checkbox
     for (const campo in campos) {
-            if ((campo === 'ventas' || campo === 'sueldo') && persona instanceof Empleado) {
-                columnasData.push({ data: persona[campo] || 'N/A' });
-            } else if ((campo === 'compras' || campo === 'telefono') && persona instanceof Cliente) {
-                columnasData.push({ data: persona[campo] || 'N/A' });
-            } else {
-                columnasData.push({ data: persona[campo] });
-            }
+        if ((campo === 'ventas' || campo === 'sueldo') && persona instanceof Empleado) {
+            columnasData.push({ data: persona[campo] || 'N/A' });
+        } else if ((campo === 'compras' || campo === 'telefono') && persona instanceof Cliente) {
+            columnasData.push({ data: persona[campo] || 'N/A' });
+        } else {
+            columnasData.push({ data: persona[campo] });
+        }
     }
 
     return columnasData;

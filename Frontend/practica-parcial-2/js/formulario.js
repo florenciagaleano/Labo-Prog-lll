@@ -1,5 +1,5 @@
 const local = "http://localhost:80/";
-let arrayHeaders = new Array("ID", "NOMBRE", "APELLIDO", "EDAD", "VENTAS", "SUELDO", "COMPRAS", "TELEFONO");
+let arrayHeaders = new Array("ID", "NOMBRE", "APELLIDO", "EDAD", "VENTAS", "SUELDO", "COMPRAS", "TELEFONO", "MODIFICAR", "ELIMINAR");
 let tabla = document.getElementById("tabla-personas");
 
 window.addEventListener("load", async () => {
@@ -54,8 +54,24 @@ function CrearFila(columnasData, tBody) {
         elemento.appendChild(document.createTextNode(columnaInfo?.data ?? '-'));
         fila.appendChild(elemento);
     });
-
+    agregarBotones(fila);
     tBody.appendChild(fila);
+}
+
+function agregarBotones(fila){
+    const elementoModificar = document.createElement("td");
+    const elementoEliminar = document.createElement("td");
+
+    let buttonModificar = document.createElement("button");
+    let buttonEliminar = document.createElement("button");
+
+    buttonModificar.textContent = "Modificar";
+    buttonEliminar.textContent = "Eliminar";
+
+    elementoModificar.appendChild(buttonEliminar);
+    elementoEliminar.appendChild(buttonModificar);
+    fila.appendChild(elementoModificar);
+    fila.appendChild(elementoEliminar);
 }
 
 async function GetPersonasJSON() {
@@ -111,9 +127,9 @@ function filtrarData(data, persona) {
     // Itera sobre los campos y agrega los que estén marcados en el checkbox
     for (const campo in campos) {
             if ((campo === 'ventas' || campo === 'sueldo') && persona instanceof Empleado) {
-                columnasData.push({ data: persona[campo] || '-' });
+                columnasData.push({ data: persona[campo] || 'N/A' });
             } else if ((campo === 'compras' || campo === 'telefono') && persona instanceof Cliente) {
-                columnasData.push({ data: persona[campo] || '-' });
+                columnasData.push({ data: persona[campo] || 'N/A' });
             } else {
                 columnasData.push({ data: persona[campo] });
             }

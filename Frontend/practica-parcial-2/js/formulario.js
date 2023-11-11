@@ -3,7 +3,7 @@ let arrayHeaders = new Array("ID", "NOMBRE", "APELLIDO", "EDAD", "VENTAS", "SUEL
 let tabla = document.getElementById("tabla-personas");
 
 window.addEventListener("load", () => {
-    GetPersonasJSON(); // Llama a la función para obtener datos
+    GetPersonasJSON();
 });
 
 function limpiarTabla(tabla) {
@@ -77,7 +77,7 @@ function GetPersonasJSON() {
     let endpoint = "labo3/PersonasEmpleadosClientes.php";
     xhttp.onreadystatechange = function() {
         if (xhttp.readyState == 4 && xhttp.status == 200) {
-            console.log(JSON.parse(xhttp.response)); // Asegúrate de que los datos se impriman correctamente
+            console.log(JSON.parse(xhttp.response));
             const data = JSON.parse(xhttp.response);
             let arrayPersonas = GetPersonas(data);
             tabla.appendChild(crearTabla(arrayPersonas));

@@ -57,19 +57,6 @@ class Criptomoneda
         return $consulta->fetchObject('Criptomoneda');
     }
 
-    public static function obtenerCriptoPorNombre($nombre){
-        $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT id, nombre, precio, nacionalidad FROM criptomoneda WHERE nombre = :nombre");
-        $consulta->bindValue(':nombre', $nombre, PDO::PARAM_STR);
-        $consulta->execute();
-
-        while ($fila = $consulta->fetch(PDO::FETCH_ASSOC)) {
-            $criptos []= $fila;
-        }
-
-        return $criptos;
-    }
-
     private function CrearDestino(){
         mkdir("Criptomonedas");
         $destino = "Criptomonedas/" . $this->nombre . ".jpg";
@@ -89,7 +76,7 @@ class Criptomoneda
     public static function ModificarCripto($nombre,$precio,$nacionalidad,$id)
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta =$objAccesoDatos->prepararConsulta("UPDATE criptomoneda SET nombre=:nombre,precio=:precio,nacionalidad=:nacionalidad WHERE id=:id");
+        $consulta =$objAccesoDatos->RetornarConsulta("UPDATE criptomoneda SET nombre=:nombre,precio=:precio,nacionalidad=:nacionalidad WHERE id=:id");
         $consulta->bindValue(':nombre',$nombre, PDO::PARAM_STR);
         $consulta->bindValue(':precio',$precio, PDO::PARAM_STR);
         $consulta->bindValue(':nacionalidad',$nacionalidad, PDO::PARAM_INT);
@@ -99,10 +86,10 @@ class Criptomoneda
         return $consulta->rowCount();
     }
 
-    public static function EliminarCripto($id)
+    public static function BorrarCripto($id)
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta =$objAccesoDatos->prepararConsulta("DELETE FROM criptomoneda WHERE id=:id");
+        $consulta =$objAccesoDatos->RetornarConsulta("DELETE FROM criptomoneda WHERE id=:id");
         $consulta->bindValue(':id',(int)$id, PDO::PARAM_INT);
         $consulta->execute(); 
         //echo $consulta->rowCount();

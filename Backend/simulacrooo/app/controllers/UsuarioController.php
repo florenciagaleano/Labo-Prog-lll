@@ -19,8 +19,7 @@ class UsuarioController extends Usuario implements IApiUsable
 
           $message = [
             'Autorizacion' => $jwt,
-            'Status' => 'Login success',
-            'Tipo' => $usuario->tipo
+            'Status' => 'Login success'
           ];
 
         } else {

@@ -38,7 +38,7 @@ class Venta
     public static function obtenerAlemanasJunio()
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT id, fecha, id_cripto, cantidad, cliente FROM venta where fecha > '2022-11-12' AND fecha < '2022-11-16'");
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT id, fecha, id_cripto, cantidad, cliente FROM venta ");
         $consulta->execute();
 
         $ventas = $consulta->fetchAll(PDO::FETCH_CLASS, 'Venta');

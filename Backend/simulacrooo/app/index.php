@@ -19,6 +19,8 @@ require_once './middlewares/MWPermisos.php';
 require_once './controllers/UsuarioController.php';
 require_once './controllers/CriptomonedaController.php';
 require_once './controllers/VentaController.php';
+require_once './controllers/ArchivosController.php';
+
 
 // Load ENV
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -51,20 +53,18 @@ $app->group('/usuarios', function (RouteCollectorProxy $group) {
 $app->group('/criptos', function (RouteCollectorProxy $group) {
 
   $group->get('[/]', \CriptomonedaController::class . ':TraerTodos');
-  $group->get('/getcriptobyid/{id}', \CriptomonedaController::class . ':TraerPorId')->add(\MWPermisos::class . ':VerificarUsuarioRegistrado');
-  $group->get('/getcriptobynombre/{nombre}', \CriptomonedaController::class . ':TraerPorNombre')->add(\MWPermisos::class . ':VerificarAdministrador');
+  $group->get('/getcriptobyid/{id}', \CriptomonedaController::class . ':TraerPorId');
   $group->get('/getcriptobynacionalidad/{nacionalidad}', \CriptomonedaController::class . ':TraerPorNacionalidad');
   $group->post('/crear', \CriptomonedaController::class . ':CargarUno');
-  $group->put('/modificar/{id}', \CriptomonedaController::class . ':ModificarUno')->add(\MWPermisos::class . ':VerificarAdministrador');
-  $group->delete('/eliminar/{id}', \CriptomonedaController::class . ':BorrarUno')->add(\MWPermisos::class . ':VerificarAdministrador');
+  $group->put('/modificar/{id}', \CriptomonedaController::class . ':CargarUno');
 
 });
 
 //Ventas
 $app->group('/ventas', function (RouteCollectorProxy $group) {
   $group->get('[/]', \VentaController::class . ':TraerTodos');
-  $group->get('/getAlemanas', \VentaController::class . ':TraerVentasAlemanas')->add(\MWPermisos::class . ':VerificarAdministrador');
-  $group->post('/crear', \VentaController::class . ':CargarUno')->add(\MWPermisos::class . ':VerificarUsuarioRegistrado');
+  $group->post('/crear', \VentaController::class . ':CargarUno');
+  $group->get('/pdf', \ArchivosController::class . ':CrearPdf');
 });
 
 

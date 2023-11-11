@@ -79,39 +79,25 @@ class CriptomonedaController extends Criptomoneda
           ->withHeader('Content-Type', 'application/json');
     }
 
-    public function TraerPorNombre($request, $response, $args)
-    {
-      
-      $crypto_nombre = $args['nombre'];
-      $parametros = $request->getParsedBody();
-      //var_dump(isset($_GET['id']));
-        $lista = Criptomoneda::obtenerCriptoPorNombre($crypto_nombre);
-
-        $payload = json_encode(array("listaCriptomoneda" => $lista));
-
-        $response->getBody()->write($payload);
-        return $response
-          ->withHeader('Content-Type', 'application/json');
-    }
     
     public function ModificarUno($request, $response, $args)
     {
+
       $params = $request->getParsedBody();
-      parse_str(file_get_contents("php://input"),$put_vars);
       
       $id = $args['id'];
-      //var_dump($id);
+      var_dump($id);
 
-      //usar form-urlencoded
+
       if (isset($id)) {
           $crypto_id = $id;
-          //var_dump($crypto_id);
+          var_dump($crypto_id);
           $cripto = Criptomoneda::obtenerCriptoPorId($crypto_id);
-          //var_dump($put_vars['nombre']);
+          
           // Gets the new data
-          $nombre = $put_vars['nombre'];
-          $nacionalidad = $put_vars['nacionalidad'];
-          $precio = $put_vars['precio'];
+          $nombre = $params['nombre'];
+          $nacionalidad = $params['nacionalidad'];
+          $precio = $params['precio'];
           
           if (Criptomoneda::ModificarCripto($nombre,$precio,$nacionalidad,$id) > 0) {
 
@@ -129,16 +115,15 @@ class CriptomonedaController extends Criptomoneda
 
     public function BorrarUno($request, $response, $args)
     {
-      $crypto_id = intval($args['id']);
-      var_dump($args['id']);
-      $cripto = Criptomoneda::obtenerCriptoPorId($crypto_id);
-      if (Criptomoneda::EliminarCripto($crypto_id) > 0) {
-        $payload = json_encode(array("mensaje" => "Cripto eliminada con exito"));
-      } else {
-        $payload = json_encode(array("mensaje" => "No se puede liminar la cripto"));
-      }
+        $parametros = $request->getParsedBody();
 
-      $response->getBody()->write($payload);
-      return $response->withHeader('Content-Type', 'application/json');
-  }
+        $cripto_id = $parametros['id'];
+        Criptomoneda::BorrarCripto($cripto_id);
+
+        $payload = json_encode(array("mensaje" => "Criptomoneda borrado con exito"));
+
+        $response->getBody()->write($payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
+    }
 }

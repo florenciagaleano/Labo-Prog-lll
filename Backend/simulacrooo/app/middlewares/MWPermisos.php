@@ -45,7 +45,7 @@ class MWPermisos
                 throw new Exception("El usuario no esta registrado.");
             }
         } catch (Exception $e) {         
-            $payload = json_encode(array('Error: ' => "Ingrese credenciales de usuario"));
+            $payload = json_encode(array('Error: ' => $e->getMessage()));
             $response->getBody()->write($payload);
             $response = $response->withStatus( 401 );
         }

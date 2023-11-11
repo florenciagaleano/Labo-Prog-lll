@@ -43,16 +43,19 @@ class VentaController extends Venta implements IApiUsable
     public function TraerTodos($request, $response, $args)
     {
       //var_dump(isset($_GET["alemanas_junio"]));
-      $lista = Venta::obtenerTodos();
-      
-      $payload = json_encode(array("listaVenta" => $lista));
+      if(isset($_GET["alemanas_junio"])){
+        $lista = Venta::obtenerAlemanasJunio();
+      }else{
+        $lista = Venta::obtenerTodos();
+      }
+        $payload = json_encode(array("listaVenta" => $lista));
 
         $response->getBody()->write($payload);
         return $response
           ->withHeader('Content-Type', 'application/json');
     }
 
-    public function TraerVentasAlemanas($request, $response, $args)
+    public function TraerVentasAlemanasJunio($request, $response, $args)
     {
         $lista = Venta::obtenerAlemanasJunio();
         $payload = json_encode(array("listaVenta" => $lista));
@@ -65,12 +68,29 @@ class VentaController extends Venta implements IApiUsable
     
     public function ModificarUno($request, $response, $args)
     {
-      return null;
+        $parametros = $request->getParsedBody();
 
+        $nombre = $parametros['nombre'];
+        Venta::modificarPedido($nombre);
+
+        $payload = json_encode(array("mensaje" => "Pedido modificado con exito"));
+
+        $response->getBody()->write($payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
     }
 
     public function BorrarUno($request, $response, $args)
     {
-       return null;
+        $parametros = $request->getParsedBody();
+
+        $PedidoId = $parametros['PedidoId'];
+        Pedido::borrarPedido($PedidoId);
+
+        $payload = json_encode(array("mensaje" => "Pedido borrado con exito"));
+
+        $response->getBody()->write($payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
     }
 }

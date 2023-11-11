@@ -1,10 +1,29 @@
 const local = "http://localhost:80/";
 let arrayHeaders = new Array("ID", "NOMBRE", "APELLIDO", "EDAD", "VENTAS", "SUELDO", "COMPRAS", "TELEFONO", "MODIFICAR", "ELIMINAR");
 let tabla = document.getElementById("tabla-personas");
+const $btnAgregar = document.getElementById("btnAgregar");
+let $formAlta = document.getElementById("form-alta");
+let esAlta = 1; //1 es alta, 0 es modificacion y -1 es eliminar
+let arrayPersonas = new Array();
+let $btnAceptar = document.getElementById("btnAceptar");
+let $btnCancelar = document.getElementById("btnCancelar");
+
+/*Campos form ABM*/
+/*const campoVentas = document.getElementById("campoVentas");
+const campoSueldo = document.getElementById("campoSueldo");
+const campoCompras = document.getElementById("campoCompras");
+const campoTelefono = document.getElementById("campoTelefono");*/
+
 
 window.addEventListener("load", () => {
     GetPersonasJSON();
 });
+
+function agregarDatos() {
+    limpiarTabla(tabla);
+    tabla.appendChild(crearTabla(arrayPersonas));
+
+}
 
 function limpiarTabla(tabla) {
     while (tabla.firstChild) {
@@ -77,9 +96,8 @@ function GetPersonasJSON() {
     let endpoint = "labo3/PersonasEmpleadosClientes.php";
     xhttp.onreadystatechange = function() {
         if (xhttp.readyState == 4 && xhttp.status == 200) {
-            console.log(JSON.parse(xhttp.response));
             const data = JSON.parse(xhttp.response);
-            let arrayPersonas = GetPersonas(data);
+            arrayPersonas = GetPersonas(data);
             tabla.appendChild(crearTabla(arrayPersonas));
         }
     };
@@ -130,4 +148,67 @@ function filtrarData(data, persona) {
     }
 
     return columnasData;
+}
+
+$btnAgregar.addEventListener("click", (e) => {
+    e.preventDefault();
+    esAlta = 1;
+    $formAlta.hidden = false;
+    campoVentas.style.display = "none";
+    campoCompras.style.display = "block";
+    campoSueldo.style.display = "none";
+    campoTelefono.style.display = "block";
+});
+
+$btnAceptar.addEventListener("click", (e) => {
+    e.preventDefault();
+    const nuevaPersona = obtenerDatosFormulario();
+    agregarPersona(nuevaPersona);
+    $formAlta.hidden = true;
+});
+
+function agregarPersona(data) {
+    let endpoint = "labo3/PersonasEmpleadosClientes.php";
+    const xhttp = new XMLHttpRequest();
+
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4) {
+            if (this.status == 200) {
+                console.log(xhttp.responseText);
+                const jsonResponse = JSON.parse(xhttp.responseText);
+                data.id = jsonResponse.id;
+                arrayPersonas.push(data);
+                agregarDatos();
+            } else {
+                console.error("Error:", xhttp.statusText);
+            }
+        }
+    };
+
+    xhttp.open("PUT", `${local}${endpoint}`, true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(JSON.stringify(data));
+}
+
+function obtenerDatosFormulario() {
+    const id = document.getElementById("txtId").value;
+    const nombre = document.getElementById("txtNombre").value;
+    const apellido = document.getElementById("txtApellido").value;
+    const edad = document.getElementById("txtEdad").value;
+    const ventas = document.getElementById("txtVentas").value;
+    const sueldo = document.getElementById("txtSueldo").value;
+    const compras = document.getElementById("txtCompras").value;
+    const telefono = document.getElementById("txtTelefono").value;
+
+
+    return {
+        id,
+        nombre,
+        apellido,
+        edad,
+        ventas,
+        sueldo,
+        compras,
+        telefono,
+    };
 }

@@ -10,6 +10,55 @@
     </div>
 
     <button id="btnAgregar"  type="submit">Agregar Elemento</button>
+    <form id="form-alta" type hidden>
+        <div>
+            <p class="campo-form-alta">Id:</p>
+            <input class="inputTxt"  placeholder="Id" type="text" name="txtId" id="txtId" readonly />
+        </div>
+        <div>
+            <p class="campo-form-alta" required>Nombre:</p>
+            <input class="inputTxt"  placeholder="Nombre" type="text" name="txtNombre" id="txtNombre" required />
+        </div>
+        <div>
+            <p class="campo-form-alta" required>Apellido:</p>
+            <input class="inputTxt"  placeholder="Apellido" type="text" name="txtApellido" id="txtApellido" required />
+        </div>
+        <div>
+            <p class="campo-form-alta" required>Edad:</p>
+            <input class="inputTxt"  placeholder="Edad" type="number" name="txtEdad" id="txtEdad" required min="15"  />
+        </div>
+        <div>
+            <p class="campo-form-alta">Tipo:</p>
+            <select id="tipo-persona">
+                <option value="cliente">Cliente</option>
+                <option value="empleado">Empleado</option>
+            </select>    
+        </div>
+        <div type="hidden" class="campo-empleado" id="campoVentas">
+            <p class="campo-form-alta" required type=>Ventas:</p>
+            <input class="inputTxt"  placeholder="Ventas" type="number" name="txtVentas" id="txtVentas" />
+        </div>
+        <div type="hidden" class="campo-empleado" id="campoSueldo">
+            <p class="campo-form-alta" required>Sueldo:</p>
+            <input class="inputTxt"  placeholder="Sueldo" type="number" name="txtSueldo" id="txtSueldo" />
+        </div>
+        <div type="hidden" class="campo-cliente" id="campoCompras">
+            <p class="campo-form-alta" required>Compras:</p>
+            <input class="inputTxt"  placeholder="Compras" type="number" name="txtCompras" id="txtCompras" />
+        </div>
+        <div type="hidden" class="campo-cliente" id="campoTelefono">
+            <p class="campo-form-alta" required>Telefono:</p>
+            <input class="inputTxt"  placeholder="Telefono" type="text" name="txtTelefono" id="txtTelefono" />
+        </div>
+
+        <div>
+            <input type="button" id="btnAceptar"  type="submit" value="Aceptar">
+            <input type="button" id="btnCancelar"  type="submit" value="Cancelar">
+
+        </div>
+
+
+    </form>
 
     <script src="js/persona.js"></script>
     <script src="js/empleado.js"></script>

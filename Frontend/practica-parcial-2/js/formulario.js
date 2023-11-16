@@ -9,6 +9,8 @@ let $btnAceptar = document.getElementById("btnAceptar");
 let $btnCancelar = document.getElementById("btnCancelar");
 const tipoPersonaSelect = document.getElementById("tipo-persona");
 let $tipoOperacion = document.getElementById("tipoOperacion");
+let spinner = document.getElementById("spinner");
+
 /*Campos form ABM*/
 /*const campoVentas = document.getElementById("campoVentas");
 const campoSueldo = document.getElementById("campoSueldo");
@@ -89,15 +91,16 @@ function agregarBotones(fila) {
         let filaClickeada = event.target.closest("tr");
         let idPersonaClickeada = filaClickeada.querySelector("td:first-child") != null ? filaClickeada.querySelector("td:first-child").textContent : null;    //selecciono el primer elemento de la fila (el id)     
         cargarPersona(this.buscarPersonaPorId(idPersonaClickeada));
-        $formAlta.hidden = false;
-        $btnAgregar.hidden = true;
-        tabla.hidden = true;
-        $tipoOperacion.textContent = "MODIFICACION";
+        mostrarFormularioABM("MODIFICAR");
         esAlta = 0;
     });
 
     buttonEliminar.addEventListener("click", () => {
-        //cargarDatosEnFormulario(fila);
+        let filaClickeada = event.target.closest("tr");
+        let idPersonaClickeada = filaClickeada.querySelector("td:first-child") != null ? filaClickeada.querySelector("td:first-child").textContent : null;    //selecciono el primer elemento de la fila (el id)     
+        cargarPersona(this.buscarPersonaPorId(idPersonaClickeada));
+        mostrarFormularioABM("ELIMINAR");
+        esAlta = -1;
     });
 
     elementoModificar.appendChild(buttonEliminar);
@@ -151,7 +154,6 @@ function filtrarData(data, persona) {
         telefono: 'TELEFONO'
     };
 
-    // Itera sobre los campos y agrega los que estén marcados en el checkbox
     for (const campo in campos) {
         if ((campo === 'ventas' || campo === 'sueldo') && persona instanceof Empleado) {
             columnasData.push({ data: persona[campo] || 'N/A' });
@@ -168,30 +170,19 @@ function filtrarData(data, persona) {
 $btnAgregar.addEventListener("click", (e) => {
     e.preventDefault();
     esAlta = 1;
-    $formAlta.hidden = false;
-    campoVentas.style.display = "none";
-    campoCompras.style.display = "block";
-    campoSueldo.style.display = "none";
-    campoTelefono.style.display = "block";
+    mostrarFormularioABM("ALTA");
 });
 
 $btnAceptar.addEventListener("click", (e) => {
     e.preventDefault();
     const nuevaPersona = obtenerDatosFormulario();
     ABMPersona(nuevaPersona);
-    $formAlta.hidden = true;
-    tabla.hidden = false;
-    $btnAgregar.hidden = false;
-    $tipoOperacion.textContent = "ALTA";
-
+    ocultarFormularioABM();
 });
 
 $btnCancelar.addEventListener("click", (e) => {
     e.preventDefault();
-    $formAlta.hidden = true;
-    tabla.hidden = false;
-    $tipoOperacion.textContent = "ALTA";
-
+    ocultarFormularioABM();
 });
 
 function ABMPersona(persona){
@@ -202,30 +193,44 @@ function ABMPersona(persona){
         case 0:
             modificarPersona(persona);
             break;
+        case -1:
+            eliminarPersona(persona.id);
+            break;
     }
 }
 
 function agregarPersona(data) {
     let endpoint = "labo3/PersonasEmpleadosClientes.php";
-    const xhttp = new XMLHttpRequest();
-
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4) {
-            if (this.status == 200) {
-                console.log(xhttp.responseText);
-                const jsonResponse = JSON.parse(xhttp.responseText);
-                data.id = jsonResponse.id;
-                arrayPersonas.push(data);
-                agregarDatos();
-            } else {
-                console.error("Error:", xhttp.statusText);
-            }
-        }
+    const req = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
     };
 
-    xhttp.open("PUT", `${local}${endpoint}`, true);
-    xhttp.setRequestHeader("Content-Type", "application/json");
-    xhttp.send(JSON.stringify(data));
+    mostrarSpinner();
+
+    fetch(`${local}${endpoint}`, req)
+        .then(response => {
+            ocultarSpinner();
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error("Error:", response.statusText);
+                alert("No se pudo realizar la operacion :(");
+                throw new Error("Operación fallida");
+            }
+        })
+        .then(jsonResponse => {
+            data.id = jsonResponse.id;
+            arrayPersonas.push(data);
+            agregarDatos();
+            ocultarFormularioABM();
+        })
+        .catch(error => {
+            console.error("Error:", error.message);
+        });
 }
 
 function obtenerDatosFormulario() {
@@ -286,6 +291,20 @@ function cargarPersona(persona){
     }
 }
 
+function ocultarFormularioABM() {
+    $formAlta.hidden = true;
+    tabla.hidden = false;
+    $btnAgregar.hidden = false;
+    $tipoOperacion.textContent = "ALTA";
+}
+
+function mostrarFormularioABM(operacion) {
+    $formAlta.hidden = false;
+    tabla.hidden = true;
+    $btnAgregar.hidden = true;
+    $tipoOperacion.textContent = operacion;
+}
+
 tipoPersonaSelect.addEventListener("change", function() {
     const tipoSeleccionado = tipoPersonaSelect.value;
 
@@ -308,6 +327,8 @@ function cambiarBotonesPorTipo(tipo){
 }
 
 async function modificarPersona(persona) {
+    mostrarSpinner();
+
     let endpoint = "labo3/PersonasEmpleadosClientes.php";
     const constRequestDetail = {
         method: 'POST',
@@ -323,12 +344,68 @@ async function modificarPersona(persona) {
     };
 
     let requestUrl = local + endpoint;
-    let response = await fetch(requestUrl, constRequestDetail);
 
-    if (response.status == 200) {
-        agregarDatos();
-        console.log(arrayPersonas);
-    } else {
-        alert("No se pudo realizar la operación. Intente de nuevo.");
+    try {
+        let response = await fetch(requestUrl, constRequestDetail);
+
+        if (response.status == 200) {
+            // Actualizar ID, elemento de la lista, etc.
+            agregarDatos();
+        } else {
+            console.error("Error:", response.statusText);
+            alert("No se pudo realizar la operación. Intente de nuevo.");
+        }
+    } catch (error) {
+        console.error("Error:", error.message);
+        alert("Hubo un error. Intente de nuevo.");
+    } finally {
+        ocultarSpinner();
     }
+}
+
+async function eliminarPersona(id) {
+    mostrarSpinner();
+
+    let endpoint = "labo3/PersonasEmpleadosClientes.php";
+    const req = {
+        method: 'DELETE',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify(id)
+    };
+
+    let requestUrl = local + endpoint;
+
+    try {
+        let response = await fetch(requestUrl, req);
+
+        if (response.status == 200) {
+            agregarDatos();
+        } else {
+            console.error("Error:", response);
+            alert("No se pudo realizar la operación. Intente de nuevo.");
+        }
+    } catch (error) {
+        console.error("Error:", error.message);
+        alert("Hubo un error. Intente de nuevo.");
+    } finally {
+        ocultarSpinner();
+    }
+}
+
+/*  SPINNER */
+function mostrarSpinner() {
+    const spinner = document.getElementById("spinner");
+    spinner.style.display = "block";
+}
+
+function ocultarSpinner() {
+    const spinner = document.getElementById("spinner");
+    spinner.style.display = "none";
 }

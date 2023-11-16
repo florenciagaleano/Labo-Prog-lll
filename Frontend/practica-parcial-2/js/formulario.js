@@ -7,7 +7,8 @@ let esAlta = 1; //1 es alta, 0 es modificacion y -1 es eliminar
 let arrayPersonas = new Array();
 let $btnAceptar = document.getElementById("btnAceptar");
 let $btnCancelar = document.getElementById("btnCancelar");
-
+const tipoPersonaSelect = document.getElementById("tipo-persona");
+let $tipoOperacion = document.getElementById("tipoOperacion");
 /*Campos form ABM*/
 /*const campoVentas = document.getElementById("campoVentas");
 const campoSueldo = document.getElementById("campoSueldo");
@@ -84,6 +85,20 @@ function agregarBotones(fila) {
 
     buttonModificar.textContent = "Modificar";
     buttonEliminar.textContent = "Eliminar";
+    buttonModificar.addEventListener("click", () => {
+        let filaClickeada = event.target.closest("tr");
+        let idPersonaClickeada = filaClickeada.querySelector("td:first-child") != null ? filaClickeada.querySelector("td:first-child").textContent : null;    //selecciono el primer elemento de la fila (el id)     
+        cargarPersona(this.buscarPersonaPorId(idPersonaClickeada));
+        $formAlta.hidden = false;
+        $btnAgregar.hidden = true;
+        tabla.hidden = true;
+        $tipoOperacion.textContent = "MODIFICACION";
+        esAlta = 0;
+    });
+
+    buttonEliminar.addEventListener("click", () => {
+        //cargarDatosEnFormulario(fila);
+    });
 
     elementoModificar.appendChild(buttonEliminar);
     elementoEliminar.appendChild(buttonModificar);
@@ -163,9 +178,32 @@ $btnAgregar.addEventListener("click", (e) => {
 $btnAceptar.addEventListener("click", (e) => {
     e.preventDefault();
     const nuevaPersona = obtenerDatosFormulario();
-    agregarPersona(nuevaPersona);
+    ABMPersona(nuevaPersona);
     $formAlta.hidden = true;
+    tabla.hidden = false;
+    $btnAgregar.hidden = false;
+    $tipoOperacion.textContent = "ALTA";
+
 });
+
+$btnCancelar.addEventListener("click", (e) => {
+    e.preventDefault();
+    $formAlta.hidden = true;
+    tabla.hidden = false;
+    $tipoOperacion.textContent = "ALTA";
+
+});
+
+function ABMPersona(persona){
+    switch(esAlta){
+        case 1:
+            agregarPersona(persona);
+            break;
+        case 0:
+            modificarPersona(persona);
+            break;
+    }
+}
 
 function agregarPersona(data) {
     let endpoint = "labo3/PersonasEmpleadosClientes.php";
@@ -211,4 +249,86 @@ function obtenerDatosFormulario() {
         compras,
         telefono,
     };
+}
+
+function buscarPersonaPorId(id) {
+    if (id != null) {
+        let idTxt = document.getElementById("txtId");
+        idTxt.value = id;
+    }
+    return arrayPersonas.filter(persona => persona.id == id)[0];
+}
+
+function cargarPersona(persona){
+    let nombreTxt = document.getElementById("txtNombre");
+    nombreTxt.value = persona.nombre;
+
+    let apellidoTxt = document.getElementById("txtApellido");
+    apellidoTxt.value = persona.apellido;
+
+    let edadTxt = document.getElementById("txtEdad");
+    edadTxt.value = persona.edad;
+
+    if(persona instanceof Cliente){
+        let comprasTxt = document.getElementById("txtCompras");
+        comprasTxt.value = persona.compras;
+        
+        let telefonoTxt = document.getElementById("txtTelefono");
+        telefonoTxt.value = persona.telefono;
+        cambiarBotonesPorTipo("cliente");
+    }else{
+        let ventasTxt = document.getElementById("txtVentas");
+        ventasTxt.value = persona.ventas;
+        
+        let sueldoTxt = document.getElementById("txtSueldo");
+        sueldoTxt.value = persona.sueldo;
+        cambiarBotonesPorTipo("empleado");
+    }
+}
+
+tipoPersonaSelect.addEventListener("change", function() {
+    const tipoSeleccionado = tipoPersonaSelect.value;
+
+    cambiarBotonesPorTipo(tipoSeleccionado);
+    
+});
+
+function cambiarBotonesPorTipo(tipo){
+    if (tipo === "empleado") {
+        campoVentas.style.display = "block";
+        campoSueldo.style.display = "block";
+        campoCompras.style.display = "none";
+        campoTelefono.style.display = "none";
+    } else if (tipo === "cliente") {
+        campoVentas.style.display = "none";
+        campoSueldo.style.display = "none";
+        campoCompras.style.display = "block";
+        campoTelefono.style.display = "block";
+    }
+}
+
+async function modificarPersona(persona) {
+    let endpoint = "labo3/PersonasEmpleadosClientes.php";
+    const constRequestDetail = {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify(persona)
+    };
+
+    let requestUrl = local + endpoint;
+    let response = await fetch(requestUrl, constRequestDetail);
+
+    if (response.status == 200) {
+        agregarDatos();
+        console.log(arrayPersonas);
+    } else {
+        alert("No se pudo realizar la operación. Intente de nuevo.");
+    }
 }

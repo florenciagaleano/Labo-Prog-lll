@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/estilos.css">
+    <title>Document</title>
+</head>
+<body>
+    <div id="tabla-vehiculos">
+    </div>
+    <div ID="spinner"></div>
+
+    <button id="btnAgregar"  type="submit">Agregar Elemento</button>
+    <form id="form-alta" type hidden>
+        <div id="tipoOperacion">ALTA</div>
+        <div>
+            <p class="campo-form-alta" readonly >Id:</p>
+            <input class="inputTxt"  placeholder="Id" type="text" name="txtId" id="txtId" readonly />
+        </div>
+        <div>
+            <p class="campo-form-alta" required>Fabricante:</p>
+            <input class="inputTxt"  placeholder="Fabricante" type="text" name="txtFabricante" id="txtFabricante" required />
+        </div>
+        <div>
+            <p class="campo-form-alta" required>Modelo:</p>
+            <input class="inputTxt"  placeholder="Modelo" type="text" name="txtModelo" id="txtModelo" required />
+        </div>
+        <div>
+            <p class="campo-form-alta" required>Año Lanzamiento:</p>
+            <input class="inputTxt"  placeholder="Año Lanzamiento" type="number" name="txtañoLanzamiento" id="txtañoLanzamiento" required min="1920"  />
+        </div>
+        <div>
+            <p class="campo-form-alta">Tipo:</p>
+            <select id="tipo-vehiculo">
+                <option value="auto">Auto</option>
+                <option value="camioneta">Camioneta</option>
+            </select>    
+        </div>
+        <div type="hidden" class="campo-auto" id="campoPuertas">
+            <p class="campo-form-alta" required type=>Cantidad de puertas:</p>
+            <input class="inputTxt"  placeholder="Cantidad de puertas" type="number" name="txtPuertas" id="txtPuertas" />
+        </div>
+        <div type="hidden" class="campo-camioneta" id="campoTransmision" hidden>
+            <p class="campo-form-alta" required>Transmision 4x4:</p>
+            <label>
+                <input type="radio" name="radioTransmision" value="si" id="radioSi"> SI
+            </label>
+            <label>
+                <input type="radio" name="radioTransmision" value="no" id="radioNo"> NO
+            </label>
+        </div>
+        
+        <div>
+            <input type="button" id="btnAceptar"  type="submit" value="Aceptar">
+            <input type="button" id="btnCancelar"  type="submit" value="Cancelar">
+
+        </div>
+
+
+    </form>
+
+    <script src="js/vehiculo.js"></script>
+    <script src="js/auto.js"></script>
+    <script src="js/camioneta.js"></script>
+    <script src="js/formulario.js" defer></script>
+</body>
+</html>

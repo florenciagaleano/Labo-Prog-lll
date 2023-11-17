@@ -13,8 +13,7 @@ class Vehiculo {
     toStringJson(conId) {
       let response = {fabricante: this.fabricante, modelo: this.modelo, añoLanzamiento: this.añoLanzamiento};
       if(conId)
-        response.id = this.ID;
-  
+        response.id = this.id;
       return JSON.stringify(response);
     }
   }

@@ -83,17 +83,17 @@ function agregarBotones(fila) {
     buttonModificar.textContent = "Modificar";
     buttonEliminar.textContent = "Eliminar";
     buttonModificar.addEventListener("click", () => {
-        /*let filaClickeada = event.target.closest("tr");
+        let filaClickeada = event.target.closest("tr");
         let idVehiculoClickeado = filaClickeada.querySelector("td:first-child") != null ? filaClickeada.querySelector("td:first-child").textContent : null;    //selecciono el primer elemento de la fila (el id)     
-        cargarVehiculo(this.buscarPersonaPorId(idVehiculoClickeado));
+        cargarVehiculo(this.buscarVehiculoPorId(idVehiculoClickeado));
         mostrarFormularioABM("MODIFICAR");
-        esAlta = 0;*/
+        esAlta = 0;
     });
 
     buttonEliminar.addEventListener("click", () => {
         /*let filaClickeada = event.target.closest("tr");
         let idVehiculoClickeado = filaClickeada.querySelector("td:first-child") != null ? filaClickeada.querySelector("td:first-child").textContent : null;    //selecciono el primer elemento de la fila (el id)     
-        cargarVehiculo(this.buscarPersonaPorId(idVehiculoClickeado));
+        cargarVehiculo(this.buscarVehiculoPorId(idVehiculoClickeado));
         mostrarFormularioABM("ELIMINAR");
         esAlta = -1;*/
     });
@@ -123,6 +123,7 @@ function GetVehiculosJSON() {
             alert('No se pudo obtener la lista de vehículos. Intente de nuevo.');
         });
 }
+
 function GetVehiculos(data) {
     let arrayVehiculos = data.map(
         (elemento) => {
@@ -153,9 +154,9 @@ function filtrarData(data, vehiculo) {
 
     for (const campo in campos) {
         if (campo === 'cantidadPuertas' && vehiculo instanceof Camioneta) {
-            columnasData.push({ data: vehiculo[campo] || 'N/A' });
+            columnasData.push({ data: vehiculo[campo] || '-' });
         } else if (campo === 'transmision4x4' && vehiculo instanceof Auto) {
-            columnasData.push({ data: vehiculo[campo] || 'N/A' });
+            columnasData.push({ data: vehiculo[campo] || '-' });
         } else {
             columnasData.push({ data: vehiculo[campo] });
         }
@@ -211,40 +212,32 @@ function ABMVehiculo(vehiculo) {
 }
 
 function obtenerDatosFormulario() {
-    const id = document.getElementById("txtId").value;
-    const fabricante = document.getElementById("txtFabricante").value;
-    const modelo = document.getElementById("txtModelo").value;
-    const añoLanzamiento = document.getElementById("txtañoLanzamiento").value;
-
-    let cantidadPuertas;
-    let transmision4x4;
-
-    if (tipoVehiculoSelect.value === "auto") {
-        cantidadPuertas = document.getElementById("txtPuertas").value;
-        transmision4x4 = null;
-    } else if (tipoVehiculoSelect.value === "camioneta") {
-        cantidadPuertas = null;
-        transmision4x4 = document.querySelector('input[name="radioTransmision"]:checked')?.value || null;
-    }
-
-    return {
-        id,
-        fabricante,
-        modelo,
-        añoLanzamiento,
-        cantidadPuertas,
-        transmision4x4,
+    const data = {
+        fabricante: document.getElementById("txtFabricante").value,
+        modelo: document.getElementById("txtModelo").value,
+        añoLanzamiento: parseInt(document.getElementById("txtañoLanzamiento").value),
     };
-}
 
-function buscarVehiculoPorId(id) {
-    if (id != null) {
-        let idTxt = document.getElementById("txtId");
-        idTxt.value = id;
+    const tipo = tipoVehiculoSelect.value;
+    const id = parseInt(document.getElementById("txtId").value);
+    if(!isNaN(id)){
+        data.id = parseInt(document.getElementById("txtId").value);
     }
-    return arrayVehiculos.filter(vehiculo => vehiculo.id == id)[0];
-}
 
+    let retorno = null;
+    switch (tipo) {
+      case 'auto':
+        data.cantidadPuertas = parseInt(document.getElementById("txtPuertas").value);
+        retorno = new Auto(data.id, data.fabricante, data.modelo, data.añoLanzamiento, data.cantidadPuertas);
+        break;
+      case 'camioneta':
+        data.transmision4x4 = document.querySelector('input[name="radioTransmision"]:checked')?.value;
+        retorno = new Camioneta(data.id, data.fabricante, data.modelo, data.añoLanzamiento, data.transmision4x4);
+        break;
+    }
+    return retorno;
+}
+  
 tipoVehiculoSelect.addEventListener("change", function() {
     const tipoSeleccionado = tipoVehiculoSelect.value;
 
@@ -260,35 +253,118 @@ tipoVehiculoSelect.addEventListener("change", function() {
 });
 
 function agregarVehiculo(data) {
-    let endpoint = "labo3/PersonasEmpleadosClientes.php";
-    const req = {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+    let endpoint = data instanceof Auto ? "insertarauto.php" : "insertarcamioneta.php";
+    data = JSON.parse(data.toStringJson(true));
+    console.log(data);
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", `${local}/${endpoint}`, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            ocultarSpinner();
+            if (xhr.status == 200) {
+                const jsonResponse = JSON.parse(xhr.responseText);
+                data.id = jsonResponse.id;
+                arrayVehiculos.push(data);
+                agregarDatos();
+                ocultarFormularioABM();
+            } else {
+                console.error("Error:", xhr);
+                alert("No se pudo realizar la operación :(");
+            }
+        }
     };
 
     mostrarSpinner();
 
-    fetch(`${local}${endpoint}`, req)
-        .then(response => {
-            ocultarSpinner();
-            if (response.ok) {
-                return response.json();
-            } else {
-                console.error("Error:", response.statusText);
-                alert("No se pudo realizar la operacion :(");
-                throw new Error("Operación fallida");
-            }
-        })
-        .then(jsonResponse => {
-            data.id = jsonResponse.id;
-            arrayPersonas.push(data);
+    const requestBody = { ...data };
+    delete requestBody.id;
+
+    const jsonData = JSON.stringify(requestBody);
+    xhr.send(jsonData);
+}
+
+function cargarVehiculo(vehiculo) {
+    let fabricanteTxt = document.getElementById("txtFabricante");
+    fabricanteTxt.value = vehiculo.fabricante;
+
+    let modeloTxt = document.getElementById("txtModelo");
+    modeloTxt.value = vehiculo.modelo;
+
+    let añoLanzamientoTxt = document.getElementById("txtañoLanzamiento");
+    añoLanzamientoTxt.value = vehiculo.añoLanzamiento;
+    console.log(vehiculo);
+    if (vehiculo.cantidadPuertas) {
+        tipoVehiculoSelect.value = "auto";
+        let puertasTxt = document.getElementById("txtPuertas");
+        puertasTxt.value = vehiculo.cantidadPuertas;
+        document.getElementById("campoTransmision").style.display = "none";
+        document.getElementById("campoPuertas").style.display = "block";
+    } else if (vehiculo.transmision4x4) {
+        tipoVehiculoSelect.value = "camioneta";
+        document.getElementById("campoPuertas").style.display = "none";
+        document.getElementById("campoTransmision").style.display = "block";
+        let transmisionRadio = document.querySelector(`input[value="${vehiculo.transmision4x4}"]`);
+        if (transmisionRadio) {
+            transmisionRadio.checked = true;
+        }
+    }
+
+}
+
+function buscarVehiculoPorId(id) {
+    if (id != null) {
+        let idTxt = document.getElementById("txtId");
+        idTxt.value = id;
+    }
+    return arrayVehiculos.filter(vehiculo => vehiculo.id == id)[0];
+}
+
+async function modificarVehiculo(data) {
+    let endpoint = data instanceof Auto ? "modificarauto.php" : "modificarcamioneta.php";
+    data = JSON.parse(data.toStringJson(true));
+    mostrarSpinner();
+
+    try {
+
+        const req  = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        };
+        let response = await fetch(`${local}/${endpoint}`, req);
+
+        if (response .status == 200) {
+            arrayVehiculos = arrayVehiculos.map(vehiculo => {
+                if (vehiculo.id === data.id)
+                  return data;
+                return vehiculo;
+              });
             agregarDatos();
             ocultarFormularioABM();
-        })
-        .catch(error => {
-            console.error("Error:", error.message);
-        });
+        } else {
+            console.error('Error:', response);
+            alert('No se pudo realizar la operación :(');
+        }
+    } catch (error) {
+        console.log(data);
+        console.error('Error:', error);
+        alert('No se pudo realizar la operación :(');
+    } finally {
+        ocultarSpinner();
+    }
+}
+
+/*  SPINNER */
+function mostrarSpinner() {
+    const spinner = document.getElementById("spinner");
+    spinner.style.display = "block";
+}
+
+function ocultarSpinner() {
+    const spinner = document.getElementById("spinner");
+    spinner.style.display = "none";
 }

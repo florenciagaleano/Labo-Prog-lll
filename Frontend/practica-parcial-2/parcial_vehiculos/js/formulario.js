@@ -254,7 +254,7 @@ tipoVehiculoSelect.addEventListener("change", function() {
 
 function agregarVehiculo(data) {
     let endpoint = data instanceof Auto ? "insertarauto.php" : "insertarcamioneta.php";
-    data = JSON.parse(data.toStringJson(true));
+    const requestBody = JSON.parse(data.toStringJson(false));
     console.log(data);
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", `${local}/${endpoint}`, true);
@@ -277,9 +277,6 @@ function agregarVehiculo(data) {
     };
 
     mostrarSpinner();
-
-    const requestBody = { ...data };
-    delete requestBody.id;
 
     const jsonData = JSON.stringify(requestBody);
     xhr.send(jsonData);

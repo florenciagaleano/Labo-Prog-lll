@@ -91,11 +91,11 @@ function agregarBotones(fila) {
     });
 
     buttonEliminar.addEventListener("click", () => {
-        /*let filaClickeada = event.target.closest("tr");
+        let filaClickeada = event.target.closest("tr");
         let idVehiculoClickeado = filaClickeada.querySelector("td:first-child") != null ? filaClickeada.querySelector("td:first-child").textContent : null;    //selecciono el primer elemento de la fila (el id)     
         cargarVehiculo(this.buscarVehiculoPorId(idVehiculoClickeado));
         mostrarFormularioABM("ELIMINAR");
-        esAlta = -1;*/
+        esAlta = -1;
     });
 
     elementoModificar.appendChild(buttonEliminar);
@@ -351,6 +351,42 @@ async function modificarVehiculo(data) {
         }
     } catch (error) {
         console.log(data);
+        console.error('Error:', error);
+        alert('No se pudo realizar la operación :(');
+    } finally {
+        ocultarSpinner();
+    }
+}
+
+async function eliminarVehiculo(id) {
+    mostrarSpinner();
+    let endpoint = "eliminarvehiculo.php";
+    console.log(JSON.stringify({ id: id }));
+    try {
+
+        const req  = {
+            method: 'DELETE',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer', 
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: id })
+        };
+        let response = await fetch(`${local}/${endpoint}`, req);
+
+        if (response .status == 200) {
+            arrayVehiculos = arrayVehiculos.filter(vehiculo => vehiculo.id != id);
+            agregarDatos();
+            ocultarFormularioABM();
+        } else {
+            console.error('Error:', response);
+            alert('No se pudo realizar la operación :(');
+        }
+    } catch (error) {
         console.error('Error:', error);
         alert('No se pudo realizar la operación :(');
     } finally {
